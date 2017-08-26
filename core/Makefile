@@ -1,4 +1,13 @@
 # Put some miscellaneous rules here
+#
+# Build system colors
+#
+# PFX: Prefix "target C++:" in yellow
+# INS: Module "Install:" output color (cyan for ics)
+
+ifneq ($(BUILD_WITH_COLORS),0)
+    include $(TOP_DIR)build/core/colors.mk
+endif
 
 # HACK: clear LOCAL_PATH from including last build target before calling
 # intermedites-dir-for
@@ -5020,16 +5029,34 @@ $(INTERNAL_OTA_PACKAGE_TARGET): $(BUILT_TARGET_FILES_PACKAGE) $(OTA_FROM_TARGET_
 
 TARGET_PACKAGE := $(PRODUCT_OUT)/$(PALLADIUM_VERSION).zip
 
-.PHONY: otapackage bacon
+.PHONY: otapackage bacon palladium
 otapackage: $(INTERNAL_OTA_PACKAGE_TARGET)
-bacon: otapackage
-  $(hide) ln -f $(INTERNAL_OTA_PACKAGE_TARGET) $(TARGET_PACKAGE)
+bacon: palladium
+palladium: otapackage
+	$(hide) ln -f $(INTERNAL_OTA_PACKAGE_TARGET) $(TARGET_PACKAGE)
 	$(hide) $(MD5SUM) $(TARGET_PACKAGE) > $(TARGET_PACKAGE).md5sum
-	@echo -e ${CL_BLD}${CL_CYN}"===============================-Package complete-==============================="${CL_RST}
+	@echo -e ${CL_RED}"                                                                  "${CL_RED}
+	@echo -e ${CL_RED}"==================-Build completed successfully-=================="${CL_RED}
+	@echo -e ${CL_RED}"******************************************************************"${CL_RED}
+	@echo -e ${CL_CYN}"                                                                  "${CL_CYN}
+	@echo -e ${CL_CYN}"     ____        ____          ___                    ____ _____  "${CL_CYN}
+	@echo -e ${CL_CYN}"    / __ \______/ / __________/ (___  __________     / __ / ___/  "${CL_CYN}
+	@echo -e ${CL_CYN}"   / /_/ / __  / / / __  / __  / / / / / __  __ \   / / / \__ \   "${CL_CYN}
+	@echo -e ${CL_CYN}"  / ____/ /_/ / / / /_/ / /_/ / / /_/ / / / / / /  / /_/ ___/ /   "${CL_CYN}
+	@echo -e ${CL_CYN}" / _/   \____/_/_/\____/\____/_/\____/_/ /_/ /_/   \____/____/    "${CL_CYN}
+	@echo -e ${CL_CYN}"                                                                  "${CL_CYN}
+	@echo -e ${CL_RED}"                                                                  "${CL_RED}
+	@echo -e ${CL_RED}"******************************************************************"${CL_RED}
+	@echo -e ${CL_RED}"                   Package complete // #StarkCelerity             "${CL_RED}
+	@echo -e ${CL_RED}"******************************************************************"${CL_RED}
+	@echo -e ${CL_RED}"         			Palladium-OS by Team-Palladium               "${CL_RED}
+	@echo -e ${CL_RED}"******************************************************************"${CL_RED}
+	@echo -e ${CL_RED}"                                                                  "${CL_RED}
+	@echo -e ${CL_CYN}"══════════════════════════════════════════════════════════════════"${CL_RST}
 	@echo -e ${CL_BLD}${CL_YLW}"Zip: "${CL_YLW} $(TARGET_PACKAGE)${CL_RST}
 	@echo -e ${CL_BLD}${CL_YLW}"MD5: "${CL_YLW}" `cat $(TARGET_PACKAGE).md5sum | awk '{print $$1}' `"${CL_RST}
-	@echo -e ${CL_BLD}${CL_YLW}"Size:"${CL_YLW}" `du -sh $(TARGET_PACKAGE) | awk '{print $$1}' `"${CL_RST}
-	@echo -e ${CL_BLD}${CL_CYN}"================================================================================"${CL_RST}
+	@echo -e ${CL_BLD}${CL_YLW}"Size: "${CL_YLW}" `du -sh $(TARGET_PACKAGE) | awk '{print $$1}' `"${CL_RST}
+	@echo -e ${CL_CYN}"══════════════════════════════════════════════════════════════════"${CL_RST}
 
 ifeq ($(BOARD_BUILD_RETROFIT_DYNAMIC_PARTITIONS_OTA_PACKAGE),true)
 name := $(TARGET_PRODUCT)
